@@ -1,0 +1,18 @@
+{
+  "name": "servidor-node",
+  "version": "1.0.0",
+  "description": "Este es nuestro primer servidor de Node Js",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Karla",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "mongodb": "^5.7.0",
+    "mongoose": "^7.4.3",
+    "openai": "^3.3.0"
+  }
+}
