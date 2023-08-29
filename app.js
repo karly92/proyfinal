@@ -2,6 +2,9 @@ const openai = require("openai");
 require("dotenv").config();
 const express = require("express");
 const path = require("path");
+const fs = require('fs');
+const pdf = require('pdf-parse');
+const axios= require('axios');
 
 const app = express();
 const port = 3000 || process.env.PORT;
@@ -9,14 +12,20 @@ app.use(express.json());
 app.use(express.static("public"));
 app.use(express.static(__dirname + "/public"));
 
+async function extractTextFromPDF(pdfFilePath) {
+  const dataBuffer = fs.readFileSync(pdfFilePath);
+  const data = await pdf(dataBuffer);
+  return data.text;
+}
+
 app.use(express.urlencoded({ extended: true }));
 //app.use(express.static('js'));
 const url = "mongodb://0.0.0.0:27017/chatbot_analysis"; // Update with your MongoDB connection URL
 let collection = "";
 const mongoose = require("mongoose");
 const configuration = new openai.Configuration({
-  organization: "org-baZmo0sBKb0daPqfgY1veI06",
-  apiKey: "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",
+  organization: "",
+  apiKey: "",
 });
 mongoose.connect("mongodb://0.0.0.0:27017/chatbot_analysis", {
   useNewUrlParser: true,
@@ -47,25 +56,27 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "/index.html"));
 });
 
+
 app.post("/chat", async (req, res) => {
-  //  console.log("karlota")
-  //console.log(req)
+
   const messages = req.body.messages;
+  console.log(messages);
+
   const model = req.body.model;
   const temp = req.body.temp;
-  const completion = await openaiapi.createChatCompletion({
+  
+const completion = await openaiapi.createChatCompletion({
     model: model,
     messages: messages,
     temperature: temp,
   });
   await res.status(200).json({ result: completion.data.choices });
-  console.log(completion);
-  //console.log(res)
+
   saveResponse(messages[0].content, completion.data.choices[0].message.content);
 });
 
+
 function saveResponse(userMessage, botResponse) {
-  console.log("dlmdkdmlfmkfmk");
   const conversation = new Conversation({
     id: "1000",
     timestamp: Date.now,
@@ -77,6 +88,8 @@ function saveResponse(userMessage, botResponse) {
 
   Conversation.collection.insertOne(conversation);
 }
+
+
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
